@@ -10,15 +10,15 @@ One login. One cookie. Five requests. Your DMZ edge is now a proxy into the voic
 
 ## Kill Chain
 
-| Step | Component | ID | Description |
-|------|-----------|----|-------------|
-| 1 | **Blankhack** | SKYLINE-2026-005 | The internet-facing Expressway-E checks only that the `X-Auth` cookie *exists* — all validation is deferred to the inner box |
-| 2 | **Seedhack** | SKYLINE-2026-006 | Expressway-C's zero-auth CDB API lets any local process plant a token record — the attacker mints their own relay credential, no MRA account needed |
-| 3 | *(corridor)* | — | Descriptor-prefix routing (`b64url(domain/https/host/port)`) turns the relay into a client-selected proxy to internal CUCM services — proven live to :443 webapps, :8443 UDS (**200 + live XML**), :6970 TFTP-HTTP (**16,889B phone config**) |
-| 4 | **Badgehack** | SKYLINE-2026-004 | CUCM validates Bearer tokens by pure cluster-key crypto — no DB, no revocation, no lockout, no throttle on success. Keys extractable via published pre-auth RCE (Silent;Call / Dead;Dial). Forged `sub=administrator` token → **`JSESSIONIDSSO` issued from the internet** · `sub`-matched forge → **per-user record read + PIN write (204, DB-verified) from internet origin** (2026-09-28) |
-| ★ | **Splithack** | SKYLINE-2026-007 | Edge amplifiers: chunk-extension request smuggling (CVE-2026-24033/57834 class) — pre-auth, live-confirmed |
-| ★ | **Wraphack** | SKYLINE-2026-008 | `Content-Length: 2⁶⁴` int64 wraparound — backend-leg smuggled-request delivery demonstrated live (fix public 11 weeks before this build shipped) |
-| ★ | **Namehack** | SKYLINE-2026-009 | uint16 header-name truncation (CVE-2026-58155 class) — attacker-chosen values logged as legitimate TAC `TrackingID`s on both boxes |
+| Step | Component | Description |
+|------|-----------|-------------|
+| 1 | **Blankhack** | The internet-facing Expressway-E checks only that the `X-Auth` cookie *exists* — all validation is deferred to the inner box |
+| 2 | **Seedhack** | Expressway-C's zero-auth CDB API lets any local process plant a token record — the attacker mints their own relay credential, no MRA account needed |
+| 3 | *(corridor)* | Descriptor-prefix routing (`b64url(domain/https/host/port)`) turns the relay into a client-selected proxy to internal CUCM services — proven live to :443 webapps, :8443 UDS (**200 + live XML**), :6970 TFTP-HTTP (**16,889B phone config**) |
+| 4 | **Badgehack** | CUCM validates Bearer tokens by pure cluster-key crypto — no DB, no revocation, no lockout, no throttle on success. Keys extractable via published pre-auth RCE (Silent;Call / Dead;Dial). Forged `sub=administrator` token → **`JSESSIONIDSSO` issued from the internet** · `sub`-matched forge → **per-user record read + PIN write (204, DB-verified) from internet origin** (2026-09-28) |
+| ★ | **Splithack** | Edge amplifiers: chunk-extension request smuggling (CVE-2026-24033/57834 class) — pre-auth, live-confirmed |
+| ★ | **Wraphack** | `Content-Length: 2⁶⁴` int64 wraparound — backend-leg smuggled-request delivery demonstrated live (fix public 11 weeks before this build shipped) |
+| ★ | **Namehack** | uint16 header-name truncation (CVE-2026-58155 class) — attacker-chosen values logged as legitimate TAC `TrackingID`s on both boxes |
 
 ★ = same-listener amplifiers on E:8443 (WAF-blind smuggling, forensic-correlation poisoning), not required for the corridor itself.
 
