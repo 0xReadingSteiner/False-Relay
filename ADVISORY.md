@@ -271,3 +271,13 @@ Given Cisco's documented non-engagement across four channels (ZDI ×17, SSD, PSI
 ---
 
 *0xReadingSteiner — PGP D5E22255F645A8B935056C278C0958C5D533080A — 0xReadingSteiner@proton.me*
+
+---
+
+## Related Vendor Advisories — Distinct From This Work
+
+Pre-checked 2026-09-29 against Cisco's publication record. No Cisco advisory covers any component of this drop; the two nearest prior advisories are different mechanisms on different surfaces, cited here so reviewers can verify the boundary themselves:
+
+- **CVE-2024-20497** ([cisco-sa-expressway-auth-kdFrcZ2j](https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-expressway-auth-kdFrcZ2j), fixed 15.2, Sep 2024): inadequate authorization checks letting a **logged-in** MRA user on a **clustered Expressway-E with OAuth** impersonate other users (call capture, caller-ID spoofing). **Distinct from Blankhack:** the presence-only `X-Auth` cookie gate documented here is an absence of edge validation entirely (not weak inter-user authorization), was proven live on **X15.5.1 — three minor releases after Cisco's 15.2 fix** — and enables unauthenticated corridor relay rather than cross-user impersonation within an authenticated session. Its survival on post-fix releases is itself the evidence of a separate root cause.
+- **CVE-2024-20253** ([cisco-sa-voice-rce-mORhqY4b](https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-voice-rce-mORhqY4b), Jan 2024): unauthenticated **CUCM/Unity** Collaboration Database web-API access chained to SSRF and root. **Distinct from Seedhack:** Seedhack targets the **Expressway-C** collaboration-database loopback service (TCP :4370, zero authentication, relay-credential planting) — a different product component than the CUCM/Unity CDB web API of CVE-2024-20253. No Cisco advisory addresses the Expressway CDB loopback service.
+- **Upstream Apache Traffic Server classes** (CVE-2026-24033 / CVE-2026-57834 chunk-extension smuggling; int64 Content-Length wrap fix `a9ec41a35`; CVE-2026-58155 header-name truncation) are cited per-component as upstream classes with public fixes predating or embargo-overlapping the shipped Cisco rebuild. **No Cisco product advisory exists for the Expressway ATS rebuild** — the most recent Expressway-specific PSIRT advisory remains [CVE-2025-20179](https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-expressway-xss-uexUZrEW) (XSS, Feb 2025).
